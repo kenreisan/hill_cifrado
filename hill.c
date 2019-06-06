@@ -9,6 +9,26 @@
 int alfabeto[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M',
 				'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 
+int * mult_matriz(int **m_a, int *m_b, int dimension){
+
+	int *m_c = (int *)calloc(dimension, sizeof(int));
+
+	for (int i = 0; i < dimension; i++)
+	{
+		for (int j = 0; j < dimension; j++)
+		{
+			m_c[i] = m_c[i] + ( m_a[i][j] * m_b[j] );
+		}
+	}
+
+	for (int n = 0; n < dimension; n++)
+	{
+		printf("%d\n", m_c[n]);
+	}
+
+	return m_c;
+}
+
 int **leer_matriz(int ** matriz_a, int filas, int columnas, char *cadena){
 
 	matriz_a = (int **)malloc(filas * sizeof(int*));
@@ -80,41 +100,65 @@ int * validar_alfabeto(int *frase){
 	return frase;
 }
 
-void separar_frase(int *frase, int dimension, int tamanio){
+int * separar_frase(int *frase, int dimension ,int inicio, int fin){
+
+	int *matriz_b = (int *)malloc(dimension * sizeof (int));
 
 	int pos = 0;
 
+	while(inicio != fin){
+
+		matriz_b[pos] = frase[inicio];
+		//printf("%c",matriz_b[pos]);		
+		pos++;
+		inicio++;
+	}
+	return matriz_b;
+} 
+
+/*
+int * separar_frase(int *frase, int dimension, int tamanio){
+
+	int pos = 0;
+	int pos2 = 0;
+
+	int *matriz_b = (int *)malloc(dimension * sizeof (int));
+
 	while(pos != tamanio){
+
+		printf("\n[");
 		for (int j = 0; j < dimension; ++j)
 		{
-			printf("%c",frase[pos++]);
+			matriz_b[pos2] = frase[pos];
+			printf("%c",matriz_b[pos2]);
+			pos++;
+			pos2++;
 		}
-		if (pos != tamanio)
-			printf(",");
+		printf("]\n");
+		pos2 = 0;
 	}
+
+	return matriz_b;
+}*/
+
+void print_letras(int *texto, int largo){
+	
+	for (int i = 0; i < largo; ++i){
+			printf("%c", texto[i]);
+		}
 	printf("\n");
 }
 
-int main(int argc, char *argv[])
-{
-	if (argc != 5){
-		printf("\n[Requiere Indicar]$ nFilas nColumnas m,a,t,r,i,z %cfrase%c\n", '"', '"');
-		printf("Programa terminado.\n\n");
-		return 1;
-	}
-
-	int i = 0;
-	int x = 0;
-	int **A;
-	char *frase = argv[4];
-	int fil = atoi(argv[1]);
-	int col = atoi(argv[2]);
-	int *frase_sin_espacios;
+void print_numeros(int *texto, int largo){
 	
-	A = leer_matriz(A ,atoi(argv[1]), atoi(argv[2]), argv[3]);
-	printf("%s\n",frase);
+	for (int i = 0; i < largo; ++i){
+			printf("%3d ", texto[i]);
+		}
+	printf("\n");
+}
 
-	/*imprime bonita la matriz dada*/
+void print_matriz(int **A, int fil, int col){
+		/*imprime bonita la matriz dada*/
 	for (int i = 0; i < fil; ++i){
 		printf("[");
 		for (int j = 0; j < col; ++j){
@@ -125,28 +169,75 @@ int main(int argc, char *argv[])
 		}
 		printf("]\n");
 	}
+}
 
-	frase_sin_espacios = formato_frase(frase, fil);
+int main(int argc, char *argv[])
+{
+	if (argc != 4){
+		printf("\n[Requiere Indicar]$ dimension m,a,t,r,i,z %cfrase%c\n", '"', '"');
+		printf("Programa terminado.\n\n");
+		return 1;
+	}
 
-	while (frase_sin_espacios[i] != '\0'){
-		printf("%c", frase_sin_espacios[i]);
-		i++;
+	int *B;
+	int **A;
+	int i = 0;
+	int x = 0;
+	int tam_frase = 0;
+	int *frase_formateada;
+	int dim = atoi(argv[1]);
+
+	int inicio = 0;
+	
+	char *frase = argv[3];
+	char *matriz = argv[2];
+
+	A = leer_matriz(A , dim, dim, matriz);
+
+	frase_formateada = formato_frase(frase, dim);
+
+	printf("%s\n",frase);
+	print_matriz(A, dim, dim);
+
+	while (frase_formateada[tam_frase] != '\0'){
+		printf("%c", frase_formateada[tam_frase]);
+		tam_frase++;
 	}
 	printf("\n");
 
-	separar_frase(frase_sin_espacios, fil, i);
+	for (int i = 0; i < (tam_frase/dim); i++)
+	{
+			B = separar_frase(frase_formateada, dim , i*dim , (i*dim) + dim);
+			print_letras(B, dim);	
+	}
+	printf("\n");
 
-	validar_alfabeto(frase_sin_espacios);
+	//B = separar_frase(frase_formateada, dim, tam_frase);
 
+	validar_alfabeto(frase_formateada);
+
+	for (int i = 0; i < (tam_frase/dim); i++)
+	{
+			B = separar_frase(frase_formateada, dim , i*dim , (i*dim) + dim);
+			print_numeros(B, dim);	
+	}
+
+	//separar_frase(frase_formateada, dim, tam_frase);
+/*
 	while (x < i){
 		printf("( ");
-		for (int i = 0; i < fil; ++i)
+		for (int i = 0; i < dim; ++i)
 		{
-			printf("%d ", frase_sin_espacios[x++]);
+			printf("%d ", frase_formateada[x++]);
 		}
 		printf(") ");
 	}
 	printf("\n");
+*/
+	int matB[3] = {2,14,12};
+
+//	mult_matriz(A, matB, dim);
+
 
 	return 0;
 }
