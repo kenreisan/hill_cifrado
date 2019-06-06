@@ -40,7 +40,7 @@ int **leer_matriz(int ** matriz_a, int filas, int columnas, char *cadena){
 	return matriz_a;
 }
 
-int * sin_espacios(char *str_original){
+int * sin_espacios(char *str_original, int n){
 	/*Quita espacios y caracteres especiales*/
 	int pos = 0;
 	int pos2 = 0;
@@ -58,25 +58,28 @@ int * sin_espacios(char *str_original){
 		}
 		pos++;
 	}
+
+	int modulo = pos2 % n;
+	int relleno = n - modulo;
+
+	if (modulo != 0){
+		for (int i = 0; i < relleno; ++i)
+		{
+			nueva[pos2++] = 'X';
+		}
+	}
+
 	return nueva;
 }
 
 int * validar_alfabeto(int *frase){
 
 	int pos = 0;
-	int existe = 0;
 
-	while(frase[pos] != '\0')
-	{
-		existe = 1;
-		for (int j = 0; j < LETRAS; j++)
-		{
-			if (frase[pos] == alfabeto[j])
-			{
-				printf("%c,",frase[pos]);
+	while(frase[pos] != '\0'){
+		for (int j = 0; j < LETRAS; j++){
+			if (frase[pos] == alfabeto[j]){
 				frase[pos] = j;
-				printf("%d\n",frase[pos]);
-				existe = 0;
 			}
 		}
 		pos++;
@@ -86,116 +89,6 @@ int * validar_alfabeto(int *frase){
 
 void separar_frase(char *frase, int tamanio){
 
-	while (*frase != '\0'){
-		
-		switch (*frase){
-
-			case 'A':
-				printf("0,");
-				break;
-			
-			case 'B':
-				printf("1,");
-				break;
-			
-			case 'C':
-				printf("2,");
-				break;
-
-			case 'D':
-				printf("3,");
-				break;
-
-			case 'E':
-				printf("4,");
-				break;
-
-			case 'F':
-				printf("5,");
-				break;
-
-			case 'G':
-				printf("6,");
-				break;
-
-			case 'H':
-				printf("7,");
-				break;
-
-			case 'I':
-				printf("8,");
-				break;
-
-			case 'J':
-				printf("9,");
-				break;
-
-			case 'K':
-				printf("10,");
-				break;
-
-			case 'L':
-				printf("11,");
-				break;
-
-			case 'M':
-				printf("12,");
-				break;
-
-			case 'N':
-				printf("13,");
-				break;
-
-			case 'O':
-				printf("14,");
-				break;
-
-			case 'P':
-				printf("15,");
-				break;
-
-			case 'Q':
-				printf("16,");
-				break;
-
-			case 'R':
-				printf("17,");
-				break;
-
-			case 'S':
-				printf("18,");
-				break;
-
-			case 'T':
-				printf("19,");
-				break;
-
-			case 'U':
-				printf("20,");
-				break;
-
-			case 'V':
-				printf("21,");
-				break;
-
-			case 'W':
-				printf("22,");
-				break;
-
-			case 'X':
-				printf("23,");
-				break;
-
-			case 'Y':
-				printf("24,");
-				break;
-
-			case 'Z':
-				printf("25,");
-				break;
-		}
-		frase++;
-	}
 }
 
 int main(int argc, char *argv[])
@@ -207,6 +100,7 @@ int main(int argc, char *argv[])
 	}
 
 	int i = 0;
+	int x = 0;
 	int **A;
 	char *frase = argv[4];
 	int fil = atoi(argv[1]);
@@ -228,23 +122,21 @@ int main(int argc, char *argv[])
 		printf("]\n");
 	}
 
-	frase_sin_espacios = sin_espacios(frase);
+	frase_sin_espacios = sin_espacios(frase, fil);
 
 	while (frase_sin_espacios[i] != '\0'){
 		printf("%c", frase_sin_espacios[i]);
 		i++;
 	}
 	printf("\n");
-	i = 0;
 
-	frase_sin_espacios = validar_alfabeto(frase_sin_espacios);
+	validar_alfabeto(frase_sin_espacios);
 
-	while (i < 27){
-		printf("%d,", frase_sin_espacios[i]);
-		i++;
+	while (x < i){
+		printf("%d,", frase_sin_espacios[x]);
+		x++;
 	}
 	printf("\n");
-
 
 	return 0;
 }
