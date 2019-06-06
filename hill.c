@@ -3,11 +3,27 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MODULE 27
 #define LETRAS 26
 
 int alfabeto[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M',
 				'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+
+void print_mensaje(int *m, int elementos){
+	for (int i = 0; i < elementos; ++i)
+	{
+		printf("%c", alfabeto[m[i]]);
+	}
+}
+
+
+int * modulo_hill(int *m, int elementos){
+
+	for (int i = 0; i < elementos; ++i)
+	{
+		m[i] = m[i]%LETRAS;
+	}
+	return m;
+}
 
 int * mult_matriz(int **m_a, int *m_b, int dimension){
 
@@ -23,7 +39,7 @@ int * mult_matriz(int **m_a, int *m_b, int dimension){
 
 	for (int n = 0; n < dimension; n++)
 	{
-		printf("%d\n", m_c[n]);
+		//printf("%d\n", m_c[n]);
 	}
 
 	return m_c;
@@ -114,32 +130,7 @@ int * separar_frase(int *frase, int dimension ,int inicio, int fin){
 		inicio++;
 	}
 	return matriz_b;
-} 
-
-/*
-int * separar_frase(int *frase, int dimension, int tamanio){
-
-	int pos = 0;
-	int pos2 = 0;
-
-	int *matriz_b = (int *)malloc(dimension * sizeof (int));
-
-	while(pos != tamanio){
-
-		printf("\n[");
-		for (int j = 0; j < dimension; ++j)
-		{
-			matriz_b[pos2] = frase[pos];
-			printf("%c",matriz_b[pos2]);
-			pos++;
-			pos2++;
-		}
-		printf("]\n");
-		pos2 = 0;
-	}
-
-	return matriz_b;
-}*/
+}
 
 void print_letras(int *texto, int largo){
 	
@@ -152,7 +143,7 @@ void print_letras(int *texto, int largo){
 void print_numeros(int *texto, int largo){
 	
 	for (int i = 0; i < largo; ++i){
-			printf("%3d ", texto[i]);
+			printf("%2d ", texto[i]);
 		}
 	printf("\n");
 }
@@ -180,14 +171,11 @@ int main(int argc, char *argv[])
 	}
 
 	int *B;
+	int *C;
 	int **A;
-	int i = 0;
-	int x = 0;
 	int tam_frase = 0;
 	int *frase_formateada;
 	int dim = atoi(argv[1]);
-
-	int inicio = 0;
 	
 	char *frase = argv[3];
 	char *matriz = argv[2];
@@ -197,7 +185,7 @@ int main(int argc, char *argv[])
 	frase_formateada = formato_frase(frase, dim);
 
 	printf("%s\n",frase);
-	print_matriz(A, dim, dim);
+	//print_matriz(A, dim, dim);
 
 	while (frase_formateada[tam_frase] != '\0'){
 		printf("%c", frase_formateada[tam_frase]);
@@ -208,36 +196,22 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < (tam_frase/dim); i++)
 	{
 			B = separar_frase(frase_formateada, dim , i*dim , (i*dim) + dim);
-			print_letras(B, dim);	
+			//print_letras(B, dim);	
 	}
 	printf("\n");
-
-	//B = separar_frase(frase_formateada, dim, tam_frase);
 
 	validar_alfabeto(frase_formateada);
 
 	for (int i = 0; i < (tam_frase/dim); i++)
 	{
 			B = separar_frase(frase_formateada, dim , i*dim , (i*dim) + dim);
-			print_numeros(B, dim);	
+			//print_numeros(B, dim);
+			C = mult_matriz(A,B,dim);
+			modulo_hill(C,dim);
+			//print_numeros(C, dim);
+			print_mensaje(C, dim);
 	}
-
-	//separar_frase(frase_formateada, dim, tam_frase);
-/*
-	while (x < i){
-		printf("( ");
-		for (int i = 0; i < dim; ++i)
-		{
-			printf("%d ", frase_formateada[x++]);
-		}
-		printf(") ");
-	}
-	printf("\n");
-*/
-	int matB[3] = {2,14,12};
-
-//	mult_matriz(A, matB, dim);
-
+	printf("\n\n");
 
 	return 0;
 }
