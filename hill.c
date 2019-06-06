@@ -9,13 +9,6 @@
 int alfabeto[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M',
 				'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 
-int mod(int a){
-	int r;
-	r = a % MODULE;
-
-	return r;
-}
-
 int **leer_matriz(int ** matriz_a, int filas, int columnas, char *cadena){
 
 	matriz_a = (int **)malloc(filas * sizeof(int*));
@@ -40,7 +33,7 @@ int **leer_matriz(int ** matriz_a, int filas, int columnas, char *cadena){
 	return matriz_a;
 }
 
-int * sin_espacios(char *str_original, int n){
+int * formato_frase(char *str_original, int n){
 	/*Quita espacios y caracteres especiales*/
 	int pos = 0;
 	int pos2 = 0;
@@ -87,8 +80,19 @@ int * validar_alfabeto(int *frase){
 	return frase;
 }
 
-void separar_frase(char *frase, int tamanio){
+void separar_frase(int *frase, int dimension, int tamanio){
 
+	int pos = 0;
+
+	while(pos != tamanio){
+		for (int j = 0; j < dimension; ++j)
+		{
+			printf("%c",frase[pos++]);
+		}
+		if (pos != tamanio)
+			printf(",");
+	}
+	printf("\n");
 }
 
 int main(int argc, char *argv[])
@@ -122,7 +126,7 @@ int main(int argc, char *argv[])
 		printf("]\n");
 	}
 
-	frase_sin_espacios = sin_espacios(frase, fil);
+	frase_sin_espacios = formato_frase(frase, fil);
 
 	while (frase_sin_espacios[i] != '\0'){
 		printf("%c", frase_sin_espacios[i]);
@@ -130,11 +134,17 @@ int main(int argc, char *argv[])
 	}
 	printf("\n");
 
+	separar_frase(frase_sin_espacios, fil, i);
+
 	validar_alfabeto(frase_sin_espacios);
 
 	while (x < i){
-		printf("%d,", frase_sin_espacios[x]);
-		x++;
+		printf("( ");
+		for (int i = 0; i < fil; ++i)
+		{
+			printf("%d ", frase_sin_espacios[x++]);
+		}
+		printf(") ");
 	}
 	printf("\n");
 
