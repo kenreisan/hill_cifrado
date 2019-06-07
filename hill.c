@@ -8,10 +8,54 @@
 int alfabeto[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M',
 				'N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 
-void print_mensaje(int *m, int elementos){
-	for (int i = 0; i < elementos; ++i)
+char * leer_archivo(FILE *file, char *inputFileName){
+	size_t maxl = 256;
+	char *line = malloc(maxl * sizeof(char));
+	
+	if(!line){
+    	printf("Memory not allocated!!\n");
+    //return -2;
+	}
+
+	if ( (file = fopen(inputFileName, "r")) == NULL){
+		printf("No se puede leer el archivo.\n");
+		exit(1);
+	}
+
+	while (fgets(line, maxl, file)) {
+
+    	while(line[strlen(line) - 1] != '\n' && line[strlen(line) - 1] != '\r'){
+        	char *tmp = realloc (line, 2 * maxl * sizeof(char));
+
+        	fseek(file,0,SEEK_SET);          //or wherever you want to seek to
+        	if (tmp) {
+            	line = tmp;
+            	maxl *= 2;
+            	fgets(line, maxl, file);
+        	}
+        	else{
+            	printf("Not enough memory for this line!!\n");
+            	//return -3;
+        	}
+    	}
+    	//printf("%s\n",line);     //just to check
+	}
+	return line;
+}
+
+
+void print_mensaje(FILE *file_cifrado,int *m, int elementos){
+	
+	//FILE *file_cifrado;
+
+	//file_cifrado = fopen("cifrado.txt","w");
+
+	for (int i = 0; i < elementos; i++)
 	{
 		printf("%c", alfabeto[m[i]]);
+		//fprintf(file_cifrado, "%s" ,"# Set in black&white by: Eduardo Romero\n");
+		//	fprintf(file_cifrado, "x");
+		fprintf(file_cifrado, "%c" , alfabeto[m[i]]);	/*Set a comment*/
 	}
 }
 
@@ -20,7 +64,12 @@ int * modulo_hill(int *m, int elementos){
 
 	for (int i = 0; i < elementos; ++i)
 	{
-		m[i] = m[i]%LETRAS;
+		if ( m[i] < 0)
+			m[i] = LETRAS + (m[i]%LETRAS);
+		else if ( m[i] == -26)
+			m[i] = 0;
+		else
+			m[i] = m[i]%LETRAS;
 	}
 	return m;
 }
@@ -71,11 +120,11 @@ int **leer_matriz(int ** matriz_a, int filas, int columnas, char *cadena){
 
 int * formato_frase(char *str_original, int n){
 	/*Quita espacios y caracteres especiales*/
+	int modulo;
+	int relleno;
 	int pos = 0;
 	int pos2 = 0;
 	int largo = strlen(str_original);
-
-	//char *nueva = malloc((largo + sumarpos) * sizeof (char));
 	int *nueva = malloc( largo * sizeof (int));
 
 	while ( str_original[pos] != '\0'){
@@ -88,8 +137,8 @@ int * formato_frase(char *str_original, int n){
 		pos++;
 	}
 
-	int modulo = pos2 % n;
-	int relleno = n - modulo;
+	modulo = pos2 % n;
+	relleno = n - modulo;
 
 	if (modulo != 0){
 		for (int i = 0; i < relleno; ++i)
@@ -165,7 +214,7 @@ void print_matriz(int **A, int fil, int col){
 int main(int argc, char *argv[])
 {
 	if (argc != 4){
-		printf("\n[Requiere Indicar]$ dimension m,a,t,r,i,z %cfrase%c\n", '"', '"');
+		printf("\n[Requiere Indicar]$ dimension m,a,t,r,i,z %carchivo%c\n", '"', '"');
 		printf("Programa terminado.\n\n");
 		return 1;
 	}
@@ -173,11 +222,13 @@ int main(int argc, char *argv[])
 	int *B;
 	int *C;
 	int **A;
+	FILE *input;
+	FILE *file_cifrado = fopen("cifrado.txt","w+");
 	int tam_frase = 0;
 	int *frase_formateada;
 	int dim = atoi(argv[1]);
-	
-	char *frase = argv[3];
+
+	char *frase = leer_archivo(input, argv[3]);
 	char *matriz = argv[2];
 
 	A = leer_matriz(A , dim, dim, matriz);
@@ -209,9 +260,14 @@ int main(int argc, char *argv[])
 			C = mult_matriz(A,B,dim);
 			modulo_hill(C,dim);
 			//print_numeros(C, dim);
-			print_mensaje(C, dim);
+			print_mensaje(file_cifrado, C, dim);
 	}
 	printf("\n\n");
+
+	free(B);
+	free(A);
+	free(C);
+	free(frase_formateada);
 
 	return 0;
 }
